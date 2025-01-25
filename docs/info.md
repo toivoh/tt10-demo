@@ -9,12 +9,17 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Explain how your project works
+TODO
 
 ## How to test
 
-Explain how to use your project
+Plug in a [TinyVGA](https://github.com/mole99/tiny-vga) compatible Pmod on the TT08 demo board's out Pmod.
+Plug in a Pmod compatible with [Mike's audio Pmod](https://github.com/MichaelBell/tt-audio-pmod) on the TT08 demo board's bidir Pmod.
+Set all inputs to zero to get the default behavior.
+The demo starts directly after reset.
 
 ## External hardware
 
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+This project needs
+-  a [TinyVGA](https://github.com/mole99/tiny-vga) VGA Pmod.
+- [Mike's audio Pmod](https://github.com/MichaelBell/tt-audio-pmod).
