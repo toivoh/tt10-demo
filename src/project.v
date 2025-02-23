@@ -1,11 +1,13 @@
 /*
- * Copyright (c) 2024-2025 Toivo Henningsson
+ * Copyright (c) 2025 Toivo Henningsson
  * SPDX-License-Identifier: Apache-2.0
  */
 
 `default_nettype none
 
-module tt_um_toivoh_demo (
+`include "pwl4_synth.vh"
+
+module tt_um_toivoh_demo_tt10 (
 		input  wire [7:0] ui_in,    // Dedicated inputs
 		output wire [7:0] uo_out,   // Dedicated outputs
 		input  wire [7:0] uio_in,   // IOs: Input path
@@ -16,28 +18,25 @@ module tt_um_toivoh_demo (
 		input  wire       rst_n     // reset_n - low to reset
 	);
 
-	localparam FINAL_COLOR_CHANNEL_BITS = 2;
+	localparam COLOR_CHANNEL_BITS=2;
 
-	reg [7:0] ui_in_reg;
-	reg rst_n_reg;
-	always @(posedge clk) rst_n_reg <= rst_n;
-
-	//wire reset = !rst_n_reg;
 	wire reset = !rst_n;
+	wire en = 1;
 
-	wire enable = 1;
-	wire [5:0] rgb;
-	wire hsync, vsync, new_frame;
-	wire audio_out;
-
-	field_test #(.COLOR_CHANNEL_BITS(2)) ft(
-		.clk(clk), .reset(reset),
-		.rgb(rgb), .hsync(hsync), .vsync(vsync), .new_frame(new_frame)
+	wire pwm_out;
+	wire [COLOR_CHANNEL_BITS*3-1:0] rgb;
+	wire hsync, vsync;
+	wire enable = 1; // TODO: only every other pixel
+	wire [1:0] advance;
+	demo_top #(.COLOR_CHANNEL_BITS(COLOR_CHANNEL_BITS)) dtop(
+		.clk(clk), .reset(reset), .advance(advance),
+		.pwm_out(pwm_out),
+		.rgb(rgb), .hsync(hsync), .vsync(vsync)
 	);
-	assign audio_out = 0;
 
+	assign advance = ui_in[7:6];
 
-	wire [FINAL_COLOR_CHANNEL_BITS-1:0] r, g, b;
+	wire [1:0] r, g, b;
 	assign {r, g, b} = rgb;
 
 	wire [7:0] uo_out0, uio_out0;
@@ -45,15 +44,15 @@ module tt_um_toivoh_demo (
 
 	assign uo_out0 = {
 		hsync,
-		b[FINAL_COLOR_CHANNEL_BITS-2],
-		g[FINAL_COLOR_CHANNEL_BITS-2],
-		r[FINAL_COLOR_CHANNEL_BITS-2],
+		b[0],
+		g[0],
+		r[0],
 		vsync,
-		b[FINAL_COLOR_CHANNEL_BITS-1],
-		g[FINAL_COLOR_CHANNEL_BITS-1],
-		r[FINAL_COLOR_CHANNEL_BITS-1]
+		b[1],
+		g[1],
+		r[1]
 	};
-	assign uio_out0[7] = audio_out;
+	assign uio_out0[7] = pwm_out; // & !ext_control[`EC_PAUSE];
 	assign uio_oe[7] = 1'b1;
 	assign uio_out0[6:0] = '0;
 	assign uio_oe[6:0] = '0;
@@ -63,7 +62,7 @@ module tt_um_toivoh_demo (
 			uo_out1 <= uo_out0;
 			uio_out1 <= uio_out0;
 		end
-		ui_in_reg <= ui_in;
+		//ui_in_reg <= ui_in;
 	end
 	assign uo_out = uo_out1;
 	assign uio_out = uio_out1;

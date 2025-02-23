@@ -5,13 +5,14 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = project.v field_test.sv raster_scan.sv
+PROJECT_SOURCES = field_test.sv afl2_alu.sv raster_scan.sv pwl4_synth.sv pwl4_player.sv demo_control.sv project.v demo_top.sv logo_table_generated.v
 
 ifneq ($(GATES),yes)
 
 # RTL simulation:
 SIM_BUILD				= sim_build/rtl
 VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
+COMPILE_ARGS    += -DSIM
 
 else
 

@@ -75,27 +75,40 @@ module raster_scan (
 
 	// Y
 	localparam Y_BITS = 10;
+
+/*
 	// 						   state
 	localparam ACTIVE_H = 480;  // 0
 	localparam FP_H = 10;		// 1
 	localparam SYNC_H = 2; 		// 2
 	localparam BP_H = 33; 		// 3
 	localparam Y0 = -ACTIVE_H/2;
+*/
+	// 						   state
+	localparam BP_H = 33; 		// 0
+	localparam ACTIVE_H = 480;  // 1
+	localparam FP_H = 10;		// 2
+	localparam SYNC_H = 2; 		// 3
+	localparam Y0 = -ACTIVE_H/2 - BP_H;
 
 	wire [1:0] y_state;
 	wire y_inc;
 	axis_scan #(.BITS(Y_BITS)) scan_y(
 		.clk(clk), .reset(reset), .en(en && new_line),
 		.pos0(Y0),
-		.thresh0(Y0 + ACTIVE_H - 1),
-		.thresh1(Y0 + ACTIVE_H + FP_H - 1),
-		.thresh2(Y0 + ACTIVE_H + FP_H + SYNC_H - 1),
-		.thresh3(Y0 + ACTIVE_H + FP_H + SYNC_H + BP_H - 1),
+		.thresh0(Y0 + BP_H - 1),
+		.thresh1(Y0 + BP_H + ACTIVE_H - 1),
+		.thresh2(Y0 + BP_H + ACTIVE_H + FP_H - 1),
+		.thresh3(Y0 + BP_H + ACTIVE_H + FP_H + SYNC_H - 1),
 		.state(y_state), .pos(y), .inc(y_inc)
 	);
-
+/*
 	assign y_active  =  (y_state == 0);
 	assign vsync     = !(y_state == 2);
+	assign new_frame =   y_inc && (y_state == 3);
+*/
+	assign y_active  =  (y_state == 1);
+	assign vsync     = !(y_state == 3);
 	assign new_frame =   y_inc && (y_state == 3);
 
 	assign active = x_active && y_active;

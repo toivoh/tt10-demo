@@ -1,5 +1,6 @@
 .DS_Store
 .idea
+.vscode
 *.vcd
 runs
 tt_submission
@@ -10,3 +11,4 @@ test/__pycache__/
 test/results.xml
 test/gate_level_netlist.v
 tt/
+gds_render*
