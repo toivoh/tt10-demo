@@ -243,7 +243,7 @@ module field_test #(parameter COLOR_CHANNEL_BITS=4, HALF_FPS=0, OSC_BITS=`OSC_BI
 		begin
 			if (new_line) fx <= fx0;
 			else if (new_pixel && x_active) fx <= next_fxy;
-			if (new_frame) fy <= fy0;
+			if (new_frame || reset) fy <= fy0;
 			else if (new_line && y_active) fy <= next_fxy;
 			//timer <= timer + new_frame;
 		end
