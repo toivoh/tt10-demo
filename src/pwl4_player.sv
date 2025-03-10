@@ -18,7 +18,7 @@ module mc_buffer #(parameter BITS) (
 	generate
 		for (i = 0; i < BITS; i++) begin : bits
 			//(* keep *) sky130_fd_sc_hd__buf_1 mc_buf(.A(in[i]), .X(out[i]));
-			(* keep *) buf mc_buf(out[i], in[i]);
+			(* keep *) (* dont_touch *) buf mc_buf(out[i], in[i]);
 		end
 	endgenerate
 `elsif MC_CHANGE
