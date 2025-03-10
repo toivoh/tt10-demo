@@ -17,7 +17,8 @@ module mc_buffer #(parameter BITS) (
 	genvar i;
 	generate
 		for (i = 0; i < BITS; i++) begin : bits
-			(* keep *) sky130_fd_sc_hd__buf_1 mc_buf(.A(in[i]), .X(out[i]));
+			//(* keep *) sky130_fd_sc_hd__buf_1 mc_buf(.A(in[i]), .X(out[i]));
+			(* keep *) buf mc_buf(out[i], in[i]);
 		end
 	endgenerate
 `elsif MC_CHANGE
@@ -178,17 +179,18 @@ module pwl4_player #(
 	wire pwmod_en = 0;
 
 	// not registers
-	reg chan_en; // TODO: better way to turn off a channel?
+	reg chan_en, chan_en1; // TODO: better way to turn off a channel?
 	//reg signed [ACC_BITS-1:0] factor;
-	reg [NOTE_BITS-1:0] note;
+	reg [NOTE_BITS-1:0] note, note1;
 	//reg [OCT_BITS-1:0] oct;
 	reg [`SYNTH_WF_BITS-1:0] wf;
 	reg [SLANT_BITS-1:0] slant;
 	reg [`SYNTH_N_SAR_BITS-1:0] n_sar;
 	reg [ACC_BITS-1:0] amp;
-	reg [T_BITS-1:0] t;
+	reg [T_BITS-1:0] t, t1;
 
-	reg [NOTE_BITS-1:0] note0;
+	//reg [NOTE_BITS-1:0] note0;
+	wire [NOTE_BITS-1:0] note0 = note;
 	wire [4:0] nt_plus_5 = note0[3:0] + 5;
 	wire nt_overflow = nt_plus_5[4] | (nt_plus_5[3:2] == '1);
 	wire [3:0] nt_raise = nt_plus_5 - (nt_overflow ? 12 : 0);
@@ -198,6 +200,27 @@ module pwl4_player #(
 
 	always_comb begin
 		chan_en = 0;
+		note = 'X;
+		t = 'X;
+
+		if (control[`DEMO_CONTROL_BIT_MELODY]) begin
+//			case (channel_mc[CHAN_BITS-1:1])
+//			case (channel_mc)
+			case (channel_mc & channel_mask)
+`ifdef SMALL
+//`include "track-data-generated.v"
+`include "track-data-li-generated.v"
+`else
+`include "track-data-li-generated.v"
+`endif
+			endcase
+		end
+	end
+
+	always_comb begin
+		chan_en1 = chan_en;
+		t1 = t;
+
 		//factor = 'X; oct = 'X;
 		//amp = 2**AMP_EXT_BITS-1;
 		//amp = ~rosc_mc >> (OSC_BITS - AMP_EXT_BITS); 
@@ -214,35 +237,19 @@ module pwl4_player #(
 		//n_sar = ACC_BITS - (SUBSAMPLE_BITS - 1) + 1;
 
 		//oct = BASE_OCT;
-		note = 'X;
-		t = 'X;
 		slant = 'X;
 		amp = 'X;
 
-
-		if (control[`DEMO_CONTROL_BIT_MELODY]) begin
-//			case (channel_mc[CHAN_BITS-1:1])
-//			case (channel_mc)
-			case (channel_mc & channel_mask)
-`ifdef SMALL
-//`include "track-data-generated.v"
-`include "track-data-li-generated.v"
-`else
-`include "track-data-li-generated.v"
-`endif
-			endcase
-		end
-
-		note0 = note;
-		if (control[`DEMO_CONTROL_BIT_RAISE]) note = note_raise;
+		note1 = note;
+		if (control[`DEMO_CONTROL_BIT_RAISE]) note1 = note_raise;
 
 		if (control[`DEMO_CONTROL_BIT_BASS] && channel_mc[CHAN_BITS-1:1] == 0 - CHANNEL0_B) begin
-			t = pos & ~1;
-			note = pos[2] ? {3'd2, note_G} : {3'd2, note_C};
-			chan_en = pos[1:0] != 3;
+			t1 = pos & ~1;
+			note1 = pos[2] ? {3'd2, note_G} : {3'd2, note_C};
+			chan_en1 = pos[1:0] != 3;
 			if (pos[6] && pos[4:3] == '1) begin
-				note = pos[2] ? {3'd2, note_Fs} : {3'd2, note_D};
-				chan_en = 1;
+				note1 = pos[2] ? {3'd2, note_Fs} : {3'd2, note_D};
+				chan_en1 = 1;
 			end
 		end
 
@@ -256,15 +263,15 @@ module pwl4_player #(
 				//wf[`SYNTH_WF_BIT_PRENOISE] = 1; // dominates?
 				wf[`SYNTH_WF_BIT_PRENOISE_ALT] = (rosc_mc[`SYNTH_PRENOISE_MSB+2 -: 2] == '1);
 				n_sar = ACC_BITS - 6;
-				chan_en = control[`DEMO_CONTROL_BIT_PRENOISE] | use_alt_osc;
+				chan_en1 = control[`DEMO_CONTROL_BIT_PRENOISE] | use_alt_osc;
 			end else begin
 				// Hack; add bass drum to channel 9
 				wf = 2**`SYNTH_WF_BIT_BDRUM;
 				n_sar = ACC_BITS - 7;
-				chan_en = control[`DEMO_CONTROL_BIT_BDRUM];
+				chan_en1 = control[`DEMO_CONTROL_BIT_BDRUM];
 				//oct = pos[1] == 0 ? 5 : 4;
-				note = {pos[1] == 0 ? 3'd5 : 3'd4, 4'bXXXX};
-				//note = {pos[1] == 0 ? 3'd6 : 3'd5, 4'bXXXX};
+				note1 = {pos[1] == 0 ? 3'd5 : 3'd4, 4'bXXXX};
+				//note1 = {pos[1] == 0 ? 3'd6 : 3'd5, 4'bXXXX};
 				slant = 0;
 				amp = (~full_t >> (`SYNTH_QUAD_X_BITS - AMP_EXT_BITS + 1)) & (2**AMP_EXT_BITS - 1);
 			end
@@ -273,36 +280,36 @@ module pwl4_player #(
 			if (channel_mc[0] == 0) begin
 				// Hack: add noise to channel 10
 				wf = 2**`SYNTH_WF_BIT_NOISE;
-				//note = {3'd6, 4'bXXXX};
-				note = {3'd7, 4'bXXXX};
+				//note1 = {3'd6, 4'bXXXX};
+				note1 = {3'd7, 4'bXXXX};
 				n_sar = ACC_BITS - 6;
 				amp = (~full_t >> (LOG2_NOISE_SAMPLES - AMP_EXT_BITS + 1)) & (2**AMP_EXT_BITS - 1);
-				//chan_en = full_t[SUBPOS_BITS-1:LOG2_NOISE_SAMPLES] == 0 && (pos[1:0] == 2);
-				chan_en = full_t[SUBPOS_BITS-1:LOG2_NOISE_SAMPLES] == 0 && (pos[0] == 0) && control[`DEMO_CONTROL_BIT_NDRUM];
+				//chan_en1 = full_t[SUBPOS_BITS-1:LOG2_NOISE_SAMPLES] == 0 && (pos[1:0] == 2);
+				chan_en1 = full_t[SUBPOS_BITS-1:LOG2_NOISE_SAMPLES] == 0 && (pos[0] == 0) && control[`DEMO_CONTROL_BIT_NDRUM];
 
 				if (control[`DEMO_CONTROL_BIT_NOISE]) begin
 					amp = '1;
-					chan_en = 1;
+					chan_en1 = 1;
 				end
 			end
 		end
 
 /*
-		note = {BASE_OCT, note_C};
-		chan_en = 1;
-		t = 0;
+		note1 = {BASE_OCT, note_C};
+		chan_en1 = 1;
+		t1 = 0;
 */
 
 
-		//if (pos[3:2]=='1) chan_en = 0;
+		//if (pos[3:2]=='1) chan_en1 = 0;
 
-		if (NUM_CHANNELS != -1) if (channel_sc >= NUM_CHANNELS) chan_en = 0;
+		if (NUM_CHANNELS != -1) if (channel_sc >= NUM_CHANNELS) chan_en1 = 0;
 		if (use_alt_osc) n_sar = alt_n_sar;
 	end
 
 	wire [OCT_BITS-1:0] oct;
 	wire [3:0] onote;
-	assign {oct, onote} = note;
+	assign {oct, onote} = note1;
 
 	// not a register
 	reg [ACC_BITS-1:0] factor;
@@ -326,8 +333,8 @@ module pwl4_player #(
 		endcase
 	end
 
-	//wire [T_BITS-1:0] t_eff = t;
-	wire [T_BITS-1:0] t_eff = t + pos[T_BITS-1:0];
+	//wire [T_BITS-1:0] t_eff = t1;
+	wire [T_BITS-1:0] t_eff = t1 + pos[T_BITS-1:0];
 
 	assign full_t = {t_eff, subpos};
 
@@ -425,7 +432,7 @@ module pwl4_player #(
 
 	pwl4_scheduler #(.TIMER_BITS(CHAN_TIMER_BITS), .OCT_BITS(OCT_BITS), .ACC_BITS(ACC_BITS), .OSC_BITS(OSC_BITS), .ALT_OSC_BITS(ALT_OSC_BITS),
 	  .OUT_ACC_BITS(OUT_ACC_BITS), .OUT_ACC_INITIAL(OUT_ACC_INITIAL), .DOUBLE_OSC_RATE(DOUBLE_OSC_RATE)) sched(
-		.clk(clk), .reset(reset), .en(en && (chan_en || new_sample)), .advance(advance),
+		.clk(clk), .reset(reset), .en(en && (chan_en1 || new_sample)), .advance(advance),
 		.chan_timer(chan_timer), .new_sample(new_sample),
 		.ext0(ext0_sched), .ext1(ext1_sched), .ext2(ext2_sched), .ext3(ext3_sched),
 		.wf(wf_sched), .oct(oct_sched), .n_slant(n_slant_sched), .n_sar(n_sar_sched), .detune(detune_sched),
@@ -485,7 +492,7 @@ module pwl4_player #(
 	//assign subsample_timer_out = subsample_timer;
 	assign subsample_timer_out = {channel_sc, chan_timer + 1'b1};
 
-	assign chan_en_out = chan_en;
+	assign chan_en_out = chan_en1;
 	assign channel_out = channel_sc;
 	assign rosc_out = rosc_sc;
 endmodule : pwl4_player
