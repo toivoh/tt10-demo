@@ -323,7 +323,7 @@ module pwl4_scheduler #(parameter TIMER_BITS=6, OCT_BITS=3, ACC_BITS=10, OSC_BIT
 		end
 
 		if (new_sample_eff) begin
-			case (reset ? advance[0] : chan_timer[`LOG2_NEW_SAMPLE_CYCLES-1:0])
+			case (reset ? {1'b0, advance[0]} : chan_timer[`LOG2_NEW_SAMPLE_CYCLES-1:0])
 				/*
 				// update osc_low, output current output_acc
 				0: begin; we = 2**`SYNTH_WE_BIT_OSC_LOW | 2**`SYNTH_WE_BIT_OUT;	term1_sel = `SYNTH_TERM1_LSB_MINUS_ONE;	term2_sel = `SYNTH_TERM2_OSC_LOW;	alu_flags = 0;	osc_cond_bit = -1;	acc_we_nbits = -1; end
