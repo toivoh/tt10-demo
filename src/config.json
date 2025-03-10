@@ -39,7 +39,7 @@
   "USE_LIGHTER": 1,
   "BASE_SDC_FILE": "src/project.sdc",
 
-  "SYNTH_STRATEGY": "AREA 1",
+  "SYNTH_STRATEGY": "AREA 0",
 
 
   "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
