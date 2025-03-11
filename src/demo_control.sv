@@ -16,7 +16,7 @@ module demo_control(
 	wire [1:0] subsection = timer >> 8;
 	wire [6:0] ppos = timer >> 3;
 
-	reg music_on, bdrum_on, ndrum_on, bass_on, noise_on, raise_on, prenoise_on, square_on;
+	reg music_on, bdrum_on, ndrum_on, bass_on, noise_on, raise_on, prenoise_on, square_on, all_square_on;
 	//wire music_on = (pattern0[1:0] != 0);
 
 	wire section_final = (ppos[6:3] == '1);
@@ -37,6 +37,7 @@ module demo_control(
 		raise_on = 0;
 		prenoise_on = 1;
 		square_on = 0;
+		all_square_on = 0;
 		pattern = 'X;
 		logo_on = 0; rev_logo_lines = 0;
 		afl_section = 'X;
@@ -72,6 +73,7 @@ module demo_control(
 			3: begin
 				pattern = 0; // ´X?
 				music_on = 0;
+				all_square_on = 1;
 
 				bdrum_on = 0;
 				if (ppos[4:3] == '1) begin
@@ -108,6 +110,7 @@ module demo_control(
 `ifdef USE_RAISE
 				raise_on = 1;
 `endif
+				all_square_on = 1;
 				pattern = 2;
 				logo_on = 1;
 				wave_mode = `WAVE_MODE_ARP;
@@ -148,6 +151,7 @@ module demo_control(
 	assign control[`DEMO_CONTROL_BIT_RAISE] = raise_on;
 	assign control[`DEMO_CONTROL_BIT_PRENOISE] = prenoise_on;
 	assign control[`DEMO_CONTROL_BIT_SQUARE] = square_on;
+	assign control[`DEMO_CONTROL_BIT_ALL_SQUARE] = all_square_on;
 
 	assign control[`DEMO_CONTROL_BIT_EFFECT] = afl_on;
 
