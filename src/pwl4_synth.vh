@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-//`define USE_EXT3
+`define USE_EXT3
 
 
 `define SYNTH_PRENOISE_MSB 15
@@ -110,7 +110,7 @@
 	//`define MC_CHANGE_ZERO
 	`define MC_PIPELINE_SCHED_INPUTS
 `else
-	`define MC_BUF_CELLS
+	//`define MC_BUF_CELLS // Turn off for IHP, can't get it to work and doesn't seem t be needed
 `endif
 
 `ifdef MC_CHANGE_X
