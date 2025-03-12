@@ -274,7 +274,10 @@ module field_test #(parameter COLOR_CHANNEL_BITS=4, HALF_FPS=0, OSC_BITS=`OSC_BI
 	localparam NUM_ITER = 3; // TODO: increase
 	localparam NOISE_CMP_BITS = 4;
 
-	wire noise_valid = fx[1+FRAC_BITS];
+	wire signed [X_BITS-1-3:0] x_shr = x[X_BITS-1:3];
+
+	//wire noise_valid = fx[1+FRAC_BITS];
+	wire noise_valid = fx[1+FRAC_BITS] && (x_shr != -40);
 	//wire next_noise_valid = next_fxy[1+FRAC_BITS];
 
 	//wire restart_noise = noise_valid & !next_noise_valid;
