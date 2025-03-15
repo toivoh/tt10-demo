@@ -9,4 +9,6 @@ Curly / Medieval presents
 my contribution to the [Tiny Tapeout](https://tinytapeout.com/) 10 demo competition.
 Code, graphics, and music by Curly (Toivo Henningsson) of Medieval.
 
+The demo can be seen at https://youtu.be/VCQJCVPyYjU (captured from a Verilator simulation).
+
 [Read the documentation](docs/info.md)

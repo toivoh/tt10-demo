@@ -9,6 +9,8 @@ Code, graphics, and music by Curly (Toivo Henningsson) of Medieval.
 
 The demo was originally written for the Sky130 process (see the sky130 branch), but was updated to the IHP process before submission.
 
+The demo can be seen at https://youtu.be/VCQJCVPyYjU (captured from a Verilator simulation).
+
 ## How it works
 
 The demo code contains a few different parts, mainly:
