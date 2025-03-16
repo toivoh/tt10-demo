@@ -178,6 +178,8 @@ An ideal sawtooth wave includes a sudden jump every period, and an ideal pulse w
 To simulate a gradually closing lowpass filter, these jumps have been changed to ramps.
 The slope of the ramps is gradually decreased as a note ages.
 
+The pulse like waveform is also uses pulse width modulation by a triangle wave, which is added to the intermediate phase after it itself has been made into a triangle wave as a step in the waveform computation.
+
 #### Bass drum
 The bass drum approximates a clamped triangle wave with exponentially decreasing frequency.
 This was a bit challenging to implement, since there is no register to store the bass drum's phase between samples, instead it has to be recalculated at each sample from the linearly increasing oscillator.
