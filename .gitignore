@@ -2,7 +2,7 @@
 .idea
 .vscode
 *.vcd
-runs
+runs*
 tt_submission
 src/user_config.json
 src/config_merged.json
@@ -10,5 +10,8 @@ test/sim_build
 test/__pycache__/
 test/results.xml
 test/gate_level_netlist.v
-tt/
+tt*/
 gds_render*
+gate_level_netlist*
+test/*-data.txt
+test/tb_demo_dump*
