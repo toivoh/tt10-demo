@@ -176,7 +176,7 @@ module pwl4_player #(
 	//wire square_en = control[`DEMO_CONTROL_BIT_SQUARE] && (channel_abs_mc[3:1] == 2);
 	wire square_en = control[`DEMO_CONTROL_BIT_SQUARE] && (channel_abs_mc[3:1] == 0);
 	//wire square_en = control[`DEMO_CONTROL_BIT_SQUARE] && (channel_abs_mc[3:1] == 1);
-	wire pwmod_en = square_en;
+	wire pwmod_en = 0;
 
 	// not registers
 	reg chan_en, chan_en1; // TODO: better way to turn off a channel?
