@@ -34,9 +34,9 @@
 
   "//": "Configuration docs: https://librelane.readthedocs.io/en/latest/reference/configuration.html",
 
-  "USE_LIGHTER": 1,
-  "SYNTH_CLOCKGATE_MIN_WIDTH": 1,
-  "SYNTH_CLOCKGATE_POSEDGE_ICG": "sky130_fd_sc_hd__dlclkp_1/GATE/CLK/GCLK",
+  "//USE_LIGHTER": 1,
+  "//SYNTH_CLOCKGATE_MIN_WIDTH": 1,
+  "//SYNTH_CLOCKGATE_POSEDGE_ICG": "sky130_fd_sc_hd__dlclkp_1/GATE/CLK/GCLK",
 
   "BASE_SDC_FILE": "src/project.sdc",
 
