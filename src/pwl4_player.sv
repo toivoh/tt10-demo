@@ -166,7 +166,7 @@ module pwl4_player #(
 	wire [FULL_T_BITS-1:0] full_t;
 
 	wire [CHAN_BITS-1:0] channel_mask;
-	assign channel_mask[CHAN_BITS-1:1] = '1;
+	assign channel_mask[CHAN_BITS-1:1] = 3'b011;
 	wire detune_double = control[`DEMO_CONTROL_BIT_DETUNE_DOUBLE];
 	assign channel_mask[0] = !detune_double;
 
