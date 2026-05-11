@@ -206,7 +206,7 @@ module pwl4_player #(
 		if (control[`DEMO_CONTROL_BIT_MELODY]) begin
 //			case (channel_mc[CHAN_BITS-1:1])
 //			case (channel_mc)
-			case (channel_mc & channel_mask)
+			case (channel_mc & channel_mask & 4'b0111)
 `ifdef SMALL
 //`include "track-data-generated.v"
 `include "track-data-li-generated.v"
