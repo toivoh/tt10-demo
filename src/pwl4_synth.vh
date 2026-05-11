@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-//`define USE_EXT3
+`define USE_EXT3
 
 
 `define SYNTH_PRENOISE_MSB 15
