@@ -15,3 +15,4 @@ gds_render*
 gate_level_netlist*
 test/*-data.txt
 test/tb_demo_dump*
+test/*.pnl.v
