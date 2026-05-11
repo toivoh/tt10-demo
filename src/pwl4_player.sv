@@ -215,6 +215,7 @@ module pwl4_player #(
 `endif
 			endcase
 		end
+		if (!chan_en) t = 0;
 	end
 
 	always_comb begin
