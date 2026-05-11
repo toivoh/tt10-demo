@@ -111,7 +111,7 @@
 	`define MC_PIPELINE_SCHED_INPUTS
 `else
 	`define MC_BUF_CELLS
-	`define USE_LATCHES
+	//`define USE_LATCHES
 `endif
 
 `ifdef MC_CHANGE_X
