@@ -27,6 +27,7 @@ project:
     - "raster_scan.sv"
     - "demo_control.sv"
     - "logo_table_generated_c.v"
+    - "memories.sv"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:

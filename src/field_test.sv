@@ -614,7 +614,8 @@ module field_test #(parameter COLOR_CHANNEL_BITS=4, HALF_FPS=0, OSC_BITS=`OSC_BI
 		//afl_en = (minst != `AFL_INST_NOP);
 	end
 
-	(* mem2reg *) reg [REG_BITS-1:0] regs[NUM_AFL_REGS];
+	//(* mem2reg *) reg [REG_BITS-1:0] regs[NUM_AFL_REGS];
+	wire [REG_BITS-1:0] regs[NUM_AFL_REGS];
 	reg sflag, sflag2;
 	reg [M_MASK_BITS-1:0] masked_bits;
 
@@ -727,6 +728,7 @@ module field_test #(parameter COLOR_CHANNEL_BITS=4, HALF_FPS=0, OSC_BITS=`OSC_BI
 		if (masked_bits_we && afl_en) masked_bits <= (m_result0[M_BITS-1 -: (M_MASK_BITS+1)] + 1) >>1;
 	end
 
+/*
 	generate
 		for (i = 0; i < NUM_AFL_REGS; i++) begin
 			always @(posedge clk) if (en) begin
@@ -735,6 +737,24 @@ module field_test #(parameter COLOR_CHANNEL_BITS=4, HALF_FPS=0, OSC_BITS=`OSC_BI
 			end
 		end
 	endgenerate
+*/
+
+	wire [REG_BITS-1:0] acc_latched;
+	pwls_shared_data #(.BITS(REG_BITS)) acc_shared_data(
+		.clk(clk), .rst_n(1'b1),
+		.in(acc), .out(acc_latched)
+	);
+	generate
+		for (i = 0; i < NUM_AFL_REGS; i++) begin
+			pwls_register #(.BITS(REG_BITS)) afl_reg(
+				.clk(clk), .rst_n(1'b1),
+				.we(en && dest_we && dest_index == i),
+				.wdata(acc_latched),
+				.rdata(regs[i])
+			);
+		end
+	endgenerate
+
 
 	wire sqrt_valid_source = sqrt_valid_use_sflag2 ? sflag2_source : (acc[E_BITS+M_BITS] == 0);
 	//wire sqrt_valid_source = 0;
