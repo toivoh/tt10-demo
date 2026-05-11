@@ -740,7 +740,7 @@ module field_test #(parameter COLOR_CHANNEL_BITS=4, HALF_FPS=0, OSC_BITS=`OSC_BI
 */
 
 	wire [REG_BITS-1:0] acc_latched;
-	wire afl_regs_rst_n = !reset;
+	wire afl_regs_rst_n = 1; //!reset;
 	pwls_shared_data #(.BITS(REG_BITS)) acc_shared_data(
 		.clk(clk), .rst_n(afl_regs_rst_n),
 		.in(acc), .out(acc_latched)

@@ -26,6 +26,7 @@ module pwls_shared_data #(parameter BITS=16) (
 			(* keep *) (* dont_touch *) sky130_fd_sc_hd__dlygate4sd3_1 hold_buf2(.A(d1), .X(out[i]));
 		end
 	endgenerate
+	//assign out = latch_out;
 endmodule : pwls_shared_data
 
 module pwls_register #(parameter BITS=16) (
